@@ -1,6 +1,7 @@
 /* script.js
   - الواجهة الأمامية (Site) بالعربي.
   - ملف PDF يتم تصديره بالإنجليزية لضمان عدم تلف الخطوط والأرقام.
+  - تم إلغاء قائمة الكاميرات والاعتماد على التشغيل المباشر لأي كاميرا متاحة.
 */
 
 /* عناصر DOM */
@@ -21,6 +22,7 @@ const clientNameInput = document.getElementById('clientName');
 const directionSelect = document.getElementById('direction');
 const expectedCountInput = document.getElementById('expectedCount');
 const requestPermBtn = document.getElementById('requestPermBtn');
+// تم إزالة: const cameraSelect = document.getElementById('cameraSelect'); 
 
 const toastsRoot = document.getElementById('toasts');
 
@@ -80,6 +82,7 @@ function renderTable(){
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* ... (بقية دوال إدارة الفواتير) ... */
+
 function saveInvoice(inv){
   const arr = JSON.parse(localStorage.getItem(INVOICES_KEY) || '[]');
   arr.unshift(inv);
@@ -189,6 +192,8 @@ clearSavedBtn.addEventListener('click', ()=>{
 
 /* ================= Camera & scanner ================== */
 
+// تم إزالة: دالة listCameras
+
 async function requestCameraPermission() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -204,31 +209,28 @@ async function requestCameraPermission() {
 
 requestPermBtn.addEventListener('click', requestCameraPermission);
 
+
 async function startScanner() {
   if (scanning) return;
+  
   const ok = await requestCameraPermission();
   if(!ok) return;
-  if(!html5QrCode) html5QrCode = new Html5Qrcode("reader", { verbose: false });
+  
+  // خطوة جديدة: إيقاف أي عملية سابقة وتنظيفها قبل البدء
+  if (html5QrCode && html5QrCode.isScanning) {
+      await stopScanner();
+  }
+  
+  // إعادة إنشاء الكائن في كل مرة لضمان عدم وجود حالة سابقة فاسدة
+  html5QrCode = new Html5Qrcode("reader", { verbose: false });
+  
   try {
-    const devices = await Html5Qrcode.getCameras();
-    if(!devices || devices.length === 0) { showToast('لا توجد كاميرا متاحة', 'err'); return; }
-    
-    // محاولة استخدام الكاميرا الخلفية (المدمجة) لـ اللاب توب أولاً
-    let camId = devices[0].id;
-    for(const d of devices){
-      const lab = (d.label||'').toLowerCase();
-      // يُفضل استخدام الكاميرا التي لا تحمل أسماء USB عامة أو محاولة العثور على الكاميرا المدمجة
-      if(lab.includes('back') || lab.includes('rear') || lab.includes('webcam')){ 
-          camId = d.id; 
-          break; 
-      }
-    }
-    
     scanning = true;
-    showToast('تم تفعيل الكاميرا', 'ok');
-    // تعديل حجم منطقة المسح ليتناسب مع الباركود العريض
+    showToast('جارٍ تشغيل الكاميرا...', 'ok');
+    
+    // محاولة التشغيل باستخدام الكاميرا الخلفية (للهاتف) أو الافتراضية
     await html5QrCode.start(
-      { deviceId: { exact: camId } },
+      { facingMode: 'environment' }, 
       { 
         fps: 10, 
         qrbox: { width: 900, height: 100 },
@@ -245,9 +247,29 @@ async function startScanner() {
         // آراء صغيرة يمكن تجاهلها
       }
     );
+    showToast('✅ تم تفعيل الكاميرا', 'ok');
+    
   } catch(e){
-    console.error('startScanner error', e);
-    showToast('خطأ في تشغيل الكاميرا', 'err');
+    console.error('startScanner environment error', e);
+    showToast('⚠️ فشل تشغيل الكاميرا الخلفية. نحاول الكاميرا الأمامية.', 'err');
+    scanning = false; // إعادة تعيين للحالة
+    
+    // محاولة ثانية: باستخدام الكاميرا الأمامية (أو أي كاميرا افتراضية)
+     try {
+         html5QrCode = new Html5Qrcode("reader", { verbose: false });
+         await html5QrCode.start(
+            { facingMode: 'user' }, 
+            { fps: 10, qrbox: { width: 900, height: 100 }, aspectRatio: 1.5 },
+            (decodedText, decodedResult) => handleDecoded(decodedText),
+            (err) => {}
+         );
+         scanning = true;
+         showToast('✅ تم تفعيل الكاميرا الأمامية', 'ok');
+    } catch(e2){
+         console.error('startScanner user fallback error', e2);
+         showToast('خطأ فادح: فشل بدء التشغيل. تأكد من رفع الموقع على رابط https://', 'err');
+         scanning = false;
+    }
   }
 }
 
@@ -331,7 +353,7 @@ async function exportInvoicePdfById(id){
 async function exportInvoicePdf(inv){
   const { jsPDF } = window.jspdf;
   // استخدام LTR في PDF لضمان صحة الأرقام والخطوط
-  const doc = new jsPDF({unit:'mm',format:'a4',orientation:'landscape', putOnlyUsedFonts: true}); 
+  const doc = new jsPDF({unit:'mm',format:'a4',orientation:'landscape'}); 
   const margin = 12;
   const width = doc.internal.pageSize.getWidth();
   let y = 12;
@@ -368,7 +390,7 @@ async function exportInvoicePdf(inv){
   doc.text(`Invoice No.: ${inv.id}`, margin, y); 
   doc.text(`Date: ${inv.date}`, width / 2, y); 
   y += 6;
-  // Client name قد يظل بالعربي، لكن يظهر كحروف إنجليزية عادية
+  // Client name
   doc.text(`Client: ${inv.client}`, margin, y); 
   // تحويل "داخل" / "خارج" إلى IN / OUT
   doc.text(`Direction: ${inv.direction === 'داخل' ? 'IN' : 'OUT'}`, width / 2, y); 
@@ -417,6 +439,9 @@ async function exportInvoicePdf(inv){
 
 
 /* ==================== start/stop buttons =================== */
+// تمت إزالة: if (typeof Html5Qrcode !== 'undefined') { requestCameraPermission(); }
+// لأننا سنقوم بالبدء مباشرة عند الضغط على زر "ابدأ الفاتورة"
+
 startBtn.addEventListener('click', ()=> startScanner());
 stopBtn.addEventListener('click', ()=> stopScanner());
 
