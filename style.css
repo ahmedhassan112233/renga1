@@ -1,0 +1,81 @@
+/* style.css - تصميم أزرق/سماوي أكثر وضوحاً */
+/* خطوط */
+:root{
+  --bg1: #1a4d6e; /* أزرق داكن جديد */
+  --bg2: #257890; /* أزرق سماوي غامق جديد */
+  --card: #ffffff;
+  --text-dark: #071226;
+  --primary-btn: #ffd27f; /* ذهبي */
+  --accent: #0bced1; /* سماوي واضح */
+  --glass: rgba(255,255,255,0.1);
+  --toast-bg: rgba(6,18,40,0.95);
+  --duplicate-row: rgba(255, 100, 100, 0.2); /* لون لتكرار الصندوق */
+}
+
+/* عام */
+*{box-sizing:border-box;font-family:'Cairo',sans-serif}
+/* تم تحويل اتجاه النص إلى RTL */
+body{
+  margin:0;background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:#fff;min-height:100vh;
+  direction: rtl; 
+}
+
+/* هيدر */
+.top-hero{padding:20px}
+.hero-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:18px}
+.brand{display:flex;gap:12px;align-items:center}
+/* الصورة أصبحت أوضح */
+.brand img{width:84px;height:84px;border-radius:12px;object-fit:cover;border:3px solid var(--accent)}
+.brand h1{margin:0;font-size:20px}
+.byline{opacity:0.9;font-size:13px;color:#dff0ff}
+
+/* أزرار */
+.btn{border:0;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;transition: all 0.2s ease;}
+.btn.primary{background:linear-gradient(90deg,var(--primary-btn),#ffb64a);color:var(--text-dark);box-shadow:0 8px 20px rgba(255,182,74,0.3)}
+.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.3)}
+.btn.accent{background:linear-gradient(90deg,var(--accent),#07a4b0);color:var(--text-dark);box-shadow:0 8px 20px rgba(11,206,209,0.3)}
+
+/* صفحة رئيسية */
+.main-wrap{max-width:1180px;margin:18px auto;display:grid;grid-template-columns:1fr 340px;gap:18px;padding:0 20px}
+.card{background:var(--glass);border-radius:12px;padding:14px;backdrop-filter: blur(6px);box-shadow:0 10px 30px rgba(2,6,23,0.35)}
+.scanner .reader{margin-top:12px;border-radius:10px;overflow:hidden;position:relative;background:#000}
+.scan-frame{height:220px;display:flex;align-items:center;justify-content:center;position:relative}
+/* إطار المسح الآن أصفر واضح */
+.scan-box{width:86%;height:80px;border-radius:8px;border:3px dashed var(--primary-btn);box-shadow:0 0 40px rgba(255,210,127,0.18)}
+.reader-hint{padding:8px 12px;font-size:13px;color:var(--accent);text-align:center}
+
+/* inputs */
+.small{font-size:13px;color:rgba(255,255,255,0.85)}
+.scanner-top input, .scanner-top select{width:100%;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.2);color:#fff;margin-bottom:8px;outline:none}
+.row{display:flex;gap:8px}
+.row select, .row input{flex:1}
+
+/* table */
+.table-wrap{margin-top:12px;overflow:auto}
+table{width:100%;border-collapse:collapse;background:transparent;color:#fff}
+th,td{text-align:center;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14px}
+th{background:rgba(255,255,255,0.1);font-weight:700}
+/* تمييز الصف المكرر */
+tr.duplicate{background:var(--duplicate-row);}
+/* محاذاة النص في الجدول الآن لليمين */
+#boxesTable td, #boxesTable th { text-align: right; }
+
+/* sidebar */
+.sidebar .invoices-list{max-height:360px;overflow:auto}
+.side-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.help{margin-top:10px;color:rgba(255,255,255,0.85)}
+
+/* toasts (bottom-right) */
+/* نرجع التوست لليسار لأن الصفحة RTL */
+#toasts{position:fixed;left:18px;bottom:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.toast{min-width:220px;padding:10px 12px;border-radius:10px;background:var(--toast-bg);color:#fff;box-shadow:0 8px 24px rgba(2,6,23,0.6);font-weight:700;opacity:0;transform:translateY(10px);transition:all .28s ease}
+.toast.show{opacity:1;transform:none}
+
+/* responsive */
+@media(max-width:980px){
+  .main-wrap{grid-template-columns:1fr; padding:0 14px}
+  .hero-inner{flex-direction:column;align-items:flex-start;gap:12px}
+  /* في الشاشات الصغيرة، نركز التوست في الوسط */
+  #toasts{right:12px;left:12px;align-items:center}
+}

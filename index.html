@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>رنجة أبو السيد — نظام الفواتير</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="top-hero">
+    <div class="hero-inner">
+      <div class="brand">
+        <img id="avatar" src="aaaa.jpg" alt="صورة المصمم" onerror="this.style.opacity=0.9">
+        <div class="brand-text">
+          <h1>رنجة أبو السيد</h1>
+          <div class="byline">تم التصميم والتطوير بواسطة <strong>أحمد حسن سالم</strong></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="requestPermBtn" class="btn primary">🔐 طلب إذن الكاميرا</button>
+        <a href="https://wa.me/201029492347" target="_blank" class="btn ghost">💬 واتساب 01029492347</a>
+        <button id="startBtn" class="btn primary">▶ ابدأ الفاتورة</button>
+        <button id="stopBtn" class="btn ghost" title="إيقاف الكاميرا">⏸ إنهاء المسح</button>
+        <button id="exportPdf" class="btn accent">🖨 تصدير PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-wrap">
+    <section class="scanner card">
+      <div class="scanner-top small">
+        <label>اسم العميل</label>
+        <input id="clientName" placeholder="مثال: موزع بورسعيد" />
+        <div class="row">
+          <select id="direction">
+            <option value="داخل">داخل</option>
+            <option value="خارج">خارج</option>
+          </select>
+          <input id="expectedCount" type="number" min="1" placeholder="توقّع عدد (اختياري)" />
+        </div>
+      </div>
+
+      <div id="reader" class="reader">
+        <div class="scan-frame">
+          <div class="scan-box"></div>
+        </div>
+        <div class="reader-hint">الكاميرا: جاهزة لقراءة الباركود — يتم استخلاص الوزن تلقائياً</div>
+      </div>
+
+      <div class="controls">
+        <button id="manualAdd" class="btn ghost">✍️ إدخال يدوي</button>
+        <button id="clearAll" class="btn ghost">🧹 مسح الحالي</button>
+        <div class="status small" id="statusInfo">الصناديق: <b id="countBoxes">0</b> — إجمالي الوزن: <b id="totalWeight">0.00</b> كجم</div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="boxesTable">
+          <thead><tr><th>#</th><th>الباركود</th><th>الوزن (كجم)</th><th>وقت</th><th>حالة</th><th>حذف</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="sidebar card">
+      <h3>الفواتير المحفوظة</h3>
+      <div id="invoicesList" class="invoices-list small">لا توجد فواتير بعد.</div>
+      <div class="side-actions">
+        <button id="saveInvoice" class="btn primary">💾 حفظ الفاتورة</button>
+        <button id="exportAll" class="btn ghost">📦 تنزيل فواتير (JSON)</button>
+        <button id="clearSaved" class="btn ghost">🗑 مسح المحفوظة</button>
+      </div>
+      <div class="small help">
+        التعليمات: السماح بالكاميرا → وجّه الباركود بالعرض.
+      </div>
+    </aside>
+  </main>
+
+  <div id="toasts"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
