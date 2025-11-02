@@ -1,81 +1,283 @@
-/* style.css - تصميم أزرق/سماوي أكثر وضوحاً */
-/* خطوط */
-:root{
-  --bg1: #1a4d6e; /* أزرق داكن جديد */
-  --bg2: #257890; /* أزرق سماوي غامق جديد */
-  --card: #ffffff;
-  --text-dark: #071226;
-  --primary-btn: #ffd27f; /* ذهبي */
-  --accent: #0bced1; /* سماوي واضح */
-  --glass: rgba(255,255,255,0.1);
-  --toast-bg: rgba(6,18,40,0.95);
-  --duplicate-row: rgba(255, 100, 100, 0.2); /* لون لتكرار الصندوق */
+/* ---------------------------------------------------- */
+/* 3. متطلبات الواجهة والتصميم (CSS) */
+/* ---------------------------------------------------- */
+
+/* الألوان */
+:root {
+    --bg1: #1a4d6e; /* Azul Dark */
+    --bg2: #257890; /* Cyan Dark */
+    --primary-btn: #ffd27f; /* Gold */
+    --secondary-btn: #0bced1; /* Accent Cyan */
+    --text-color: #f0f0f0;
+    --dark-text: #1a4d6e;
 }
 
-/* عام */
-*{box-sizing:border-box;font-family:'Cairo',sans-serif}
-/* تم تحويل اتجاه النص إلى RTL */
-body{
-  margin:0;background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  color:#fff;min-height:100vh;
-  direction: rtl; 
+/* إعادة ضبط عامة واللغة */
+body {
+    direction: rtl;
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg1);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-/* هيدر */
-.top-hero{padding:20px}
-.hero-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:18px}
-.brand{display:flex;gap:12px;align-items:center}
-/* الصورة أصبحت أوضح */
-.brand img{width:84px;height:84px;border-radius:12px;object-fit:cover;border:3px solid var(--accent)}
-.brand h1{margin:0;font-size:20px}
-.byline{opacity:0.9;font-size:13px;color:#dff0ff}
+header {
+    background-color: var(--bg2);
+    padding: 20px 40px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
 
-/* أزرار */
-.btn{border:0;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;transition: all 0.2s ease;}
-.btn.primary{background:linear-gradient(90deg,var(--primary-btn),#ffb64a);color:var(--text-dark);box-shadow:0 8px 20px rgba(255,182,74,0.3)}
-.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.3)}
-.btn.accent{background:linear-gradient(90deg,var(--accent),#07a4b0);color:var(--text-dark);box-shadow:0 8px 20px rgba(11,206,209,0.3)}
+h1 {
+    margin: 0;
+    color: var(--primary-btn);
+}
 
-/* صفحة رئيسية */
-.main-wrap{max-width:1180px;margin:18px auto;display:grid;grid-template-columns:1fr 340px;gap:18px;padding:0 20px}
-.card{background:var(--glass);border-radius:12px;padding:14px;backdrop-filter: blur(6px);box-shadow:0 10px 30px rgba(2,6,23,0.35)}
-.scanner .reader{margin-top:12px;border-radius:10px;overflow:hidden;position:relative;background:#000}
-.scan-frame{height:220px;display:flex;align-items:center;justify-content:center;position:relative}
-/* إطار المسح الآن أصفر واضح */
-.scan-box{width:86%;height:80px;border-radius:8px;border:3px dashed var(--primary-btn);box-shadow:0 0 40px rgba(255,210,127,0.18)}
-.reader-hint{padding:8px 12px;font-size:13px;color:var(--accent);text-align:center}
+/* تخطيط العمودين */
+#app-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* عمود الماسح 2/3، عمود النتائج 1/3 */
+    gap: 30px;
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-/* inputs */
-.small{font-size:13px;color:rgba(255,255,255,0.85)}
-.scanner-top input, .scanner-top select{width:100%;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.2);color:#fff;margin-bottom:8px;outline:none}
-.row{display:flex;gap:8px}
-.row select, .row input{flex:1}
+/* تنسيق الألواح */
+.panel {
+    background-color: var(--bg2);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
 
-/* table */
-.table-wrap{margin-top:12px;overflow:auto}
-table{width:100%;border-collapse:collapse;background:transparent;color:#fff}
-th,td{text-align:center;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14px}
-th{background:rgba(255,255,255,0.1);font-weight:700}
-/* تمييز الصف المكرر */
-tr.duplicate{background:var(--duplicate-row);}
-/* محاذاة النص في الجدول الآن لليمين */
-#boxesTable td, #boxesTable th { text-align: right; }
+h2 {
+    border-bottom: 3px solid var(--secondary-btn);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
 
-/* sidebar */
-.sidebar .invoices-list{max-height:360px;overflow:auto}
-.side-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.help{margin-top:10px;color:rgba(255,255,255,0.85)}
+/* تنسيق الأزرار */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+    margin-left: 10px;
+    margin-bottom: 5px; /* مسافة بين الأزرار في وضع العمود */
+}
 
-/* toasts (bottom-right) */
-/* نرجع التوست لليسار لأن الصفحة RTL */
-#toasts{position:fixed;left:18px;bottom:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-.toast{min-width:220px;padding:10px 12px;border-radius:10px;background:var(--toast-bg);color:#fff;box-shadow:0 8px 24px rgba(2,6,23,0.6);font-weight:700;opacity:0;transform:translateY(10px);transition:all .28s ease}
-.toast.show{opacity:1;transform:none}
+.primary-btn {
+    background-color: var(--primary-btn);
+    color: var(--dark-text);
+}
 
-/* responsive */
-@media(max-width:980px){
-  .main-wrap{grid-template-columns:1fr; padding:0 14px}
-  .hero-inner{flex-direction:column;align-items:flex-start;gap:12px}
-  /* في الشاشات الصغيرة، نركز التوست في الوسط */
-  #toasts{right:12px;left:12px;align-items:center}
+.secondary-btn {
+    background-color: var(--secondary-btn);
+    color: var(--dark-text);
+}
+
+.btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap; /* تسمح للأزرار بالنزول لسطر جديد */
+    gap: 10px;
+}
+
+/* عناصر الإدخال */
+.input-controls {
+    margin-bottom: 20px;
+}
+
+.input-controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-controls input, .input-controls select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--primary-btn);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    background-color: var(--bg1);
+    color: var(--text-color);
+    font-family: 'Cairo', sans-serif;
+}
+
+
+/* تنسيق الماسح الضوئي */
+#video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    height: 350px; /* تم تصغير الارتفاع قليلاً لتناسب الشاشات */
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto 20px auto;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* مخفي مبدئياً */
+}
+
+#loadingMessage {
+    text-align: center;
+    padding: 100px 0;
+    color: var(--primary-btn);
+}
+
+/* تأثير خط المسح الاحترافي (Animation) */
+#video-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 3px;
+    background-color: red; 
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.9);
+    z-index: 10;
+    transform: translateY(0%);
+    animation: scan-line 2s infinite alternate;
+    display: none; 
+}
+
+#scanner-container.active #video-wrapper::after {
+    display: block; /* يظهر فقط عند تفعيل الكاميرا */
+}
+
+@keyframes scan-line {
+    0% { transform: translateY(0%); }
+    100% { transform: translateY(347px); } /* 350px - 3px */
+}
+
+/* جدول النتائج */
+#results-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+#boxesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#boxesTable th, #boxesTable td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: right;
+    font-size: 14px;
+}
+
+#boxesTable thead th {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+#boxesTable .del-btn {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    font-size: 12px;
+}
+
+#summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--bg1);
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.status-message {
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: -10px;
+    color: var(--primary-btn);
+}
+
+/* قائمة الفواتير المحفوظة (Sidebar) */
+#invoicesList {
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 10px 0;
+    margin-bottom: 15px;
+}
+
+.invoice-row {
+    background-color: var(--bg1);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.side-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------- */
+/* رسائل التأكيد (Toasts) - أسفل اليسار في RTL */
+/* ---------------------------------------------------- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px; 
+    z-index: 1000;
+}
+
+.toast {
+    background-color: var(--secondary-btn);
+    color: var(--dark-text);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* ---------------------------------------------------- */
+/* تصميم الهواتف (Media Query) */
+/* ---------------------------------------------------- */
+@media (max-width: 980px) {
+    #app-container {
+        grid-template-columns: 1fr; /* يتحول إلى عمود واحد */
+        gap: 20px;
+        padding: 15px;
+    }
+
+    #video-wrapper {
+        height: 300px;
+    }
 }

@@ -1,90 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>رنجة أبو السيد — نظام الفواتير</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تسجيل فواتير الباركود عالي الأداء</title>
+    
+    <!-- 1. Cairo Font (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 2. ملف الـ CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- 3. jsQR (لتفكيك الباركود) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.min.js"></script>
+    
+    <!-- 4. jsPDF (لتوليد PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+    <header>
+        <h1>نظام الفواتير الآلي</h1>
+        <p>مسح ضوئي سريع وموثوق لفواتير الباركود</p>
+    </header>
 
-  <div class="top-hero">
-    <div class="hero-inner">
-      <div class="brand">
-        <img id="avatar" src="aaaa.jpg" alt="صورة المصمم" onerror="this.style.opacity=0.9">
-        <div class="brand-text">
-          <h1>رنجة أبو السيد</h1>
-          <div class="byline">تم التصميم والتطوير بواسطة <strong>أحمد حسن سالم</strong></div>
-        </div>
-      </div>
+    <main id="app-container">
+        
+        <!-- قسم الماسح الضوئي + جدول النتائج (العمود الأول - الأكبر) -->
+        <section id="scanner-container" class="panel">
+            <h2>التحكم والمسح</h2>
+            
+            <div class="input-controls">
+                <label for="clientName">اسم العميل:</label>
+                <input id="clientName" placeholder="مثال: موزع بورسعيد" />
+                <label for="direction">اتجاه الحركة:</label>
+                <select id="direction">
+                    <option value="داخل">داخل (استلام)</option>
+                    <option value="خارج">خارج (توزيع)</option>
+                </select>
+            </div>
 
-      <div class="actions">
-        <button id="requestPermBtn" class="btn primary">🔐 طلب إذن الكاميرا</button>
-        <a href="https://wa.me/201029492347" target="_blank" class="btn ghost">💬 واتساب 01029492347</a>
-        <button id="startBtn" class="btn primary">▶ ابدأ الفاتورة</button>
-        <button id="stopBtn" class="btn ghost" title="إيقاف الكاميرا">⏸ إنهاء المسح</button>
-        <button id="exportPdf" class="btn accent">🖨 تصدير PDF</button>
-      </div>
-    </div>
-  </div>
+            <div id="video-wrapper">
+                <video id="video" playsinline></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <div id="loadingMessage">انقر "ابدأ الفاتورة" لتشغيل الكاميرا</div>
+            </div>
+            
+            <p id="scan-status" class="status-message">اضغط "ابدأ الفاتورة" للبدء.</p>
+            
+            <div class="controls">
+                <button id="startButton" class="btn primary-btn">ابدأ الفاتورة</button>
+                <button id="stopButton" class="btn secondary-btn" disabled>إنهاء المسح</button>
+                <button id="manualAdd" class="btn secondary-btn">✍️ إدخال يدوي</button>
+                <button id="clearAll" class="btn secondary-btn">🧹 مسح القائمة</button>
+            </div>
 
-  <main class="main-wrap">
-    <section class="scanner card">
-      <div class="scanner-top small">
-        <label>اسم العميل</label>
-        <input id="clientName" placeholder="مثال: موزع بورسعيد" />
-        <div class="row">
-          <select id="direction">
-            <option value="داخل">داخل</option>
-            <option value="خارج">خارج</option>
-          </select>
-          <input id="expectedCount" type="number" min="1" placeholder="توقّع عدد (اختياري)" />
-        </div>
-        </div>
+            <!-- جدول النتائج الحالية -->
+            <h3>قائمة الصناديق الحالية:</h3>
+            <div id="results-table-wrapper">
+                <table id="boxesTable">
+                    <thead><tr><th>#</th><th>الباركود</th><th>الوزن (كجم)</th><th>حذف</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-      <div id="reader" class="reader">
-        <div class="scan-frame">
-          <div class="scan-box"></div>
-        </div>
-        <div class="reader-hint">الكاميرا: جاهزة لقراءة الباركود — يتم استخلاص الوزن تلقائياً</div>
-      </div>
+            <div id="summary">
+                <strong>إجمالي الصناديق: </strong><span id="total-items">0</span><br>
+                <strong>إجمالي الوزن (كجم): </strong><span id="total-weight">0.0</span>
+            </div>
+        </section>
 
-      <div class="controls">
-        <button id="manualAdd" class="btn ghost">✍️ إدخال يدوي</button>
-        <button id="clearAll" class="btn ghost">🧹 مسح الحالي</button>
-        <div class="status small" id="statusInfo">الصناديق: <b id="countBoxes">0</b> — إجمالي الوزن: <b id="totalWeight">0.00</b> كجم</div>
-      </div>
+        <!-- قسم قائمة الفواتير المحفوظة (العمود الثاني - الأصغر) -->
+        <aside id="invoices-sidebar" class="panel">
+            <h2>الفواتير المحفوظة</h2>
+            <div id="invoicesList">لا توجد فواتير بعد.</div>
+            <div class="side-actions">
+                <button id="saveInvoice" class="btn primary-btn">💾 حفظ الفاتورة</button>
+                <button id="exportPdf" class="btn secondary-btn">🖨 تصدير PDF للمحفوظة</button>
+            </div>
+            <div class="small help">
+                ملحوظة: الحفظ محلي في المتصفح فقط.
+            </div>
+        </aside>
 
-      <div class="table-wrap">
-        <table id="boxesTable">
-          <thead><tr><th>#</th><th>الباركود</th><th>الوزن (كجم)</th><th>وقت</th><th>حالة</th><th>حذف</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+    </main>
+    
+    <!-- منطقة رسائل التأكيد (Toasts) -->
+    <div id="toast-container"></div>
 
-    <aside class="sidebar card">
-      <h3>الفواتير المحفوظة</h3>
-      <div id="invoicesList" class="invoices-list small">لا توجد فواتير بعد.</div>
-      <div class="side-actions">
-        <button id="saveInvoice" class="btn primary">💾 حفظ الفاتورة</button>
-        <button id="exportAll" class="btn ghost">📦 تنزيل فواتير (JSON)</button>
-        <button id="clearSaved" class="btn ghost">🗑 مسح المحفوظة</button>
-      </div>
-      <div class="small help">
-        التعليمات: السماح بالكاميرا → وجّه الباركود بالعرض.
-      </div>
-    </aside>
-  </main>
-
-  <div id="toasts"></div>
-
-  <script src="script.js"></script>
+    <!-- 5. ملف الـ JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
